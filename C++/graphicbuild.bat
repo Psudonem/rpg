@@ -10,7 +10,6 @@ rem "C:\Program Files (x86)\Dev-Cpp\MinGW64\bin\g++" graphic.cpp
 "C:\Program Files (x86)\Dev-Cpp\MinGW64\bin\g++" graphic.cpp -IC:\mingw\include\SDL2 -LC:\mingw\lib -w -Wl,-subsystem,windows -lmingw32 -lSDL2main -lSDL2 -o graphic
 
 
-
 graphic
 
 rem del a.exe
