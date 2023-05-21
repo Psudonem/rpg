@@ -9,6 +9,10 @@ scale = 12
 Type npc
     n As String
     speech As String
+    x As Integer
+    y As Integer
+    t As Integer
+
 End Type
 
 
@@ -42,7 +46,9 @@ p.y = 10
 
 Dim map(100) As entry
 
+
 Dim Shared curMap(32, 32) As Integer
+Dim Shared npcs(32, 32) As npc
 
 Dim entryCount As Integer
 Dim x As Integer
@@ -82,14 +88,44 @@ Next j
 Close #1
 
 
-Dim b As Integer
+Dim in As Integer
+Dim in2 As Integer
+Dim b As _Byte
 Dim s As String
+
+
 Open "bigtown_npc.bin" For Binary As #1
 Cls
-Get #1, , b
-Print b
-PCopy 0, 1
-Sleep
+Get #1, , in ' amount of npcs
+For i = 0 To in - 1
+    n$ = ""
+    Get #1, , in2  'name length
+    For j = 0 To in2 - 1
+        Get #1, , b
+        n$ = n$ + Chr$(b)
+    Next j
+    Print n$
+
+    msg$ = ""
+    Get #1, , in2
+    For j = 0 To in2 - 1
+        Get #1, , b
+        msg$ = msg$ + Chr$(b)
+    Next j
+    Print msg$
+
+
+    Get #1, , x
+    Get #1, , y
+
+    npcs(x, y).n = n$
+    npcs(x, y).speech = msg$
+
+    Print x, y
+    PCopy 0, 1
+    Sleep
+
+Next i
 Close #1
 
 
@@ -155,10 +191,25 @@ Do
     'can.y = (32 - p.y) * scale
 Loop
 
-Function isNpc (ix, iy)
+Sub isNpc (ix, iy)
     If curMap(ix, iy) = 3 Then
+        s$ = npcs(ix, iy).speech
+        For z = 0 To Len(s$)
+            Cls
+            Print
+            Print npcs(ix, iy).n + " says..."
+            Print
+
+            If Mid$(s$, z, 1) = " " Then Sound 73 + Int(Rnd * 100), 1
+
+            Print Left$(s$, z)
+
+            PCopy 0, 1
+            _Delay 0.05
+        Next z
+        Sleep
     End If
-End Function
+End Sub
 
 Function isBlank (ix As Integer, iy As Integer)
     outt = 0
@@ -166,6 +217,8 @@ Function isBlank (ix As Integer, iy As Integer)
         If iy < 32 And iy >= 0 Then
             If curMap(ix, iy) = 0 Then
                 outt = 1
+            ElseIf curMap(ix, iy) = 3 Then
+                isNpc ix, iy
             End If
         End If
     End If
